@@ -173,8 +173,8 @@ delta <- runif(n)
 
 
 # Generate Potential Outcomes
-Y_1 <- 1 + U
-Y_0 <- U
+Y_1 <- 1 + X + U
+Y_0 <- X+U
 
 # Generate observed Outcomes
 Y  <- D*Y_1 + (1-D)*Y_0
