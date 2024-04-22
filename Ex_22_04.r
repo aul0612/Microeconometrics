@@ -168,12 +168,12 @@ help_mat <- mvrnorm(n,
 X <- as.numeric(help_mat[,1]<=0)
 Z <- as.numeric(help_mat[,2]<=0)
 U <- help_mat[,3]
-D <- as.numeric(X<=)
+D <- as.numeric(X<= rnorm(n,0,.25))
 delta <- runif(n)
 
 
 # Generate Potential Outcomes
-Y_1 <- delta + U
+Y_1 <- 1 + U
 Y_0 <- U
 
 # Generate observed Outcomes
