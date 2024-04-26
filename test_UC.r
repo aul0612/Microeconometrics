@@ -2,14 +2,14 @@
 
 ### Consider the Setup of heterogeneous TE as in Ex_22_04.r
 ### but change W s.t. it only has discrete values
-n <- 100_000
+n <- 1000
 sample_space <- c(-2,-1,1,2)
 
 ### Heterogenous TE
 set.seed(123)
-# W <- sample(sample_space, n, replace = TRUE) #discrete W
-W <- rnorm(n)
-D <- as.numeric(W <= rnorm(n, 0, .25))
+W <- sample(sample_space, n, replace = TRUE) #discrete W
+#W <- rnorm(n)
+D <- as.numeric(W <= rnorm(n, 0, 2.5))
 # D <- as.numeric(W <= rnorm(n, 0, 2)) # discrete W
 # Here D is a NOT deterministic function of W
 U <- rnorm(n, 0, .7)
@@ -78,3 +78,32 @@ ATE_prop
 
 
 ############################# here seem to exist some issues!
+
+#### with discrete values, one can simply estimate 
+#### ATE given wi since within each subgroup treatment is effectively assigned randomly
+#### then using a weighted average gives the average TE over all Wi
+
+weights <- numeric(length(sample_space))
+coeffs <- numeric(length(sample_space))
+treatment_freq <- numeric(length(sample_space))
+mat <- cbind(weights, coeffs)
+data <- as.data.frame(cbind(Y,D,W))
+for (i in 1:length(sample_space)){
+    w <- sample_space[i]
+    sub <- subset(data, data$W==w)
+    head(sub)
+    lm_obj <- lm(Y~D, sub)
+    coeffs[i] <- lm_obj$coefficients[2]
+    weights[i] <- nrow(sub)/nrow(data)
+    treatment_freq[i] <- sum(sub$D)/nrow(sub)
+}
+coeffs
+weighted.mean(coeffs, weights)
+treatment_freq
+### with smaller sample size, this is overestimating the effect for large/small W.
+### This coincides with a high or low probability of treatment
+### i.e. either only few units with treatment or few units without treatment exist with this w_i
+### making the estimation worse?
+
+### Most notably, this way of estimation coincides with the above used one to estimate it via conditional means
+### as estimators of conditional expected values.
