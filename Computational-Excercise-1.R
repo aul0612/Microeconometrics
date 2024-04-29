@@ -6,7 +6,7 @@ n <- 1000 #sample size
 #######################################################
 
 set.seed(123)
-W <-  rnorm(n) 
+W <-  rnorm(n)
 D <-  rbinom(n, 1, .5)  #Generate treatment such that P(D=1)=P(D=0)=0.5
 U <- rnorm(n,0,.7) #Generate Unobservables
 
@@ -20,17 +20,18 @@ Y <- D*Y_1 + (1-D)*Y_0
 #Recall that only (Y,D,W) are observed
 
 lm(Y ~ D + W)
-
+lm(Y~D) ## omitted variable bias
 #Here, the estimate of the slope coefficient is 1.04218. This is very close to the (A)TE
 #which is equal to one. This is in line slide p. 32, since under homogenous TE, OLS estimates
-#the ATE.
+#the ATE. If the potential outcomes are independent of D, and D is independent of W,
+#the potential outcomes are independent of D given W.
 
 
 
 ### Heterogenous Treatment Effects ####
 
 set.seed(123)
-W <-  rnorm(n) 
+W <-  rnorm(n)
 D <-  rbinom(n, 1, .5)  #Generate treatment such that P(D=1)=P(D=0)=0.5
 U <- rnorm(n,0,.7) #Generate Unobservables
 Delta <- runif(n) #Generate heterogenous treatment effects
@@ -42,7 +43,8 @@ Y_0 <- W + U #potential outcomes for not being trated
 #Generate observable Outcomes
 Y <- D*Y_1 + (1-D)*Y_0
 
-#The ATE is given by 0.5. It can also be "estimated" by
+#The ATE is given by 0.5(mean of uniform distribution on (0,1)).
+#It can also be "estimated" by
 mean(Delta)
 #Of course, in practice we cannot do this. Since only (Y,D,W) are observed!
 
@@ -57,7 +59,9 @@ lm(Y ~ D + W)
 
 #Alternatively, assume there are no control variables W. In this case, we know from the lecture
 #that the OLS estimates the ATE
-
+#I.e. our finding that under RA, the coefficient of D
+#in an (OLS) regression is equal to the ATE, i.e. the expected value of the random coefficient model.
+# (slides 18 and 26)
 
 ### Heterogenous Treatment Effects no controls####
 set.seed(123)
